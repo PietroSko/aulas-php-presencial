@@ -1,7 +1,4 @@
 $(document).ready(function() {
-    // Variável global "resposta" que armazena
-    // a resposta JSON da consulta do CEP
-    // digitado pelo usuário.
     let resposta = false;
 
     $("input[name=cep]").mask("00000-000");
