@@ -1,5 +1,4 @@
 body {
-            
     color: #e0e0e0  !important;
 }
 .border {
@@ -21,4 +20,19 @@ body {
     background-color: #1e1e2f !important;
     color: #ffffff !important;
     border: 1px solid #0250a3 !important;
+}
+
+.dados-cadastro {
+    padding: 15px;
+}
+
+.dados-cadastro p {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-bottom: 1px solid #1a1a2f;
+}
+
+.dados-cadastro strong {
+    color: #007bff;
+    margin-right: 5px;
 }
