@@ -1,24 +1,32 @@
 <?php
-$mostrarDados = false;
-$dados = array();
+// Se o usuário enviou o formulário
+if (isset($_POST['submit'])) {
+  // Cria variáveis com o nome do atributo 'name' dos inputs do formulário
+  extract($_POST);
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
-    $mostrarDados = true;
-    
-    // Capturar todos os dados do POST
-    $dados = [
-        'Nome' => $_POST['nome'] ?? 'Não informado',
-        'Sobrenome' => $_POST['Sobrenome'] ?? 'Não informado',
-        'Telefone' => $_POST['telefone'] ?? 'Não informado',
-        'Email' => $_POST['email'] ?? 'Não informado',
-        'CEP' => $_POST['cep'] ?? 'Não informado',
-        'Rua' => $_POST['rua'] ?? 'Não informado',
-        'Número' => $_POST['numero'] ?? 'Não informado',
-        'Bairro' => $_POST['bairro'] ?? 'Não informado',
-        'Complemento' => $_POST['complemento'] ?? 'Não informado',
-        'Estado' => $_POST['estado'] ?? 'Não informado',
-        'Cidade' => $_POST['cidade'] ?? 'Não informado'
-    ];
+function validaCampo(string $valorCampo, string $tipoCampo = ""){
+    switch($tipoCampo){
+        case 'email':
+            if (filter_var($valorCampo, FILTER_VALIDATE_EMAIL)){
+                return true;
+            }
+            break;
+        case 'telefone':
+            if (preg_match('/^\(\d\d\)\s[9]?\d\d\d\d-\d\d\d\d$/', $valorCampo)){
+                return true;
+            }
+            break;
+        case 'cep':
+            if (!preg_match('/^[0-9]{5}-?[0-9]{3}$/', $valorCampo)) {
+                return true;
+            }
+            break;
+        default:
+            if (!empty(trim($valorCampo))) {
+                return true;
+            }
+    }
 }
 ?>
 
@@ -40,65 +48,100 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
 </head>
 
 <body>
-    <?php if ($mostrarDados): ?>
-        <div class="container mt-4">
-            <div class="alert alert-success">
-                <h4>Dados enviados com sucesso!</h4>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-dark table-striped">
-                    <thead>
-                        <tr>
-                            <th>Campo</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($dados as $campo => $valor): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($campo); ?></td>
-                                <td><?php echo htmlspecialchars($valor); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="text-center mt-3">
-                <a href="index.php" class="btn btn-primary">Voltar ao formulário</a>
-            </div>
-        </div>
-    <?php endif; ?>
-    
-    <?php if (!$mostrarDados): ?>
     <div class="row">
-        <div class="col-3 h2 text-center border pt-5">
-            Barra lateral
+        <div class="col-3 border pt-3">
+            <h2 class="text-center mb-4">Dados Informados</h2>
+            <?php if(isset($_POST['submit'])): ?>
+                <div class="dados-cadastro">
+                    <?php if(isset($nome) && validaCampo($nome)): ?>
+                        <p><strong>Nome:</strong> <?php echo htmlspecialchars($nome); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($sobrenome) && validaCampo($sobrenome)): ?>
+                        <p><strong>Sobrenome:</strong> <?php echo htmlspecialchars($sobrenome); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($telefone) && validaCampo($telefone)): ?>
+                        <p><strong>Telefone:</strong> <?php echo htmlspecialchars($telefone); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($email) && validaCampo($email, 'email')): ?>
+                        <p><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($cep) && validaCampo($cep)): ?>
+                        <p><strong>CEP:</strong> <?php echo htmlspecialchars($cep); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($rua) && validaCampo($rua)): ?>
+                        <p><strong>Rua:</strong> <?php echo htmlspecialchars($rua); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($numero) && validaCampo($numero)): ?>
+                        <p><strong>Número:</strong> <?php echo htmlspecialchars($numero); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($bairro) && validaCampo($bairro)): ?>
+                        <p><strong>Bairro:</strong> <?php echo htmlspecialchars($bairro); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($complemento) && !empty(trim($complemento))): ?>
+                        <p><strong>Complemento:</strong> <?php echo htmlspecialchars($complemento); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($estado) && validaCampo($estado)): ?>
+                        <p><strong>Estado:</strong> <?php echo htmlspecialchars($estado); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if(isset($cidade) && validaCampo($cidade)): ?>
+                        <p><strong>Cidade:</strong> <?php echo htmlspecialchars($cidade); ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <p class="text-center">Nenhum dado cadastrado ainda.</p>
+            <?php endif; ?>
         </div>
         <div class="col-8 mt-4">
             <div class="h1 text-center">
                 Cadastre-se
             </div>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+            <form action="index.php" method="post">
                 <div class="row mt-4">
                     <div class="col-6">
-                        <input type="text" class="form-control cont" name="nome" placeholder="Nome" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['nome']) 
+                        && !validaCampo($_POST['nome']) ? 'is-invalid' : '')?>" 
+                        name="nome" placeholder="Nome" value="<?php echo (isset($nome) ? $nome : '') ?>" >
+                        <div class="invalid-feedback">
+                            Digite seu nome
+                        </div>
                     </div>
                     <div class="col-6">
-                        <input type="text" class="form-control cont" name="Sobrenome" placeholder="Sobrenome" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['sobrenome']) && !validaCampo($_POST['sobrenome']) ? 'is-invalid' : '')?>" name="sobrenome" placeholder="Sobrenome" value="<?php echo (isset($sobrenome) ? $sobrenome : '') ?>" >
+                        <div class="invalid-feedback">
+                            Digite seu sobrenome
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-4">
                     <div class="col-6">
-                        <input type="text" class="form-control cont" name="telefone" placeholder="Telefone" required>
+                        <input type="text" class="form-control  <?php echo (isset($_POST['telefone']) && !validaCampo($_POST['telefone']) ? 'is-invalid' : '')?>" name="telefone" placeholder="Telefone" pattern="\(\d{2}\)\s9?\d{4}-\d{4}" value="<?php echo (isset($telefone) ? $telefone : '') ?>" >
+                        <div class="invalid-feedback">
+                            Telefone inválido
+                        </div>
                     </div>
                     <div class="col-6">
-                        <input type="text" class="form-control cont" name="email" placeholder="E-mail" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['email']) 
+                        && !validaCampo($_POST['email'], 'email') ? 'is-invalid' : '')?>" 
+                        name="email" placeholder="E-mail" value="<?php echo (isset($email) ? $email : '') ?>" >
+                        <div class="invalid-feedback">
+                            Digite um email válido
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
                         <div class="input-group has-validation">
-                            <input type="text" class="form-control cont" name="cep" placeholder="CEP" pattern="[\d]{5}-[\d]{3}" required>
+                            <input type="text" class="form-control <?php echo (isset($_POST['cep']) && !validaCampo($_POST['cep']) ? 'is-invalid' : '')?>" name="cep" placeholder="CEP" pattern="[\d]{5}-[\d]{3}" value="<?php echo (isset($cep) ? $cep : '') ?>">
                             <div class="invalid-feedback">
                                 CEP inválido
                             </div>
@@ -107,40 +150,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 </div>
                 <div class="row mt-3">
                     <div class="col-9">
-                        <input type="text" class="form-control cont" name="rua" placeholder="Rua" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['rua']) && !validaCampo($_POST['rua']) ? 'is-invalid' : '')?>" name="rua" placeholder="Rua" value="<?php echo (isset($rua) ? $rua : '') ?>">
+                        <div class="invalid-feedback">
+                            Digite sua rua
+                        </div>
                     </div>
                     <div class="col-3">
-                        <input type="text" class="form-control cont" name="numero" placeholder="Nº" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['numero']) && !validaCampo($_POST['numero']) ? 'is-invalid' : '')?>" name="numero" placeholder="Nº" value="<?php echo (isset($numero) ? $numero : '') ?>">
+                        <div class="invalid-feedback">
+                            Digite o número de sua moradia
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-6">
-                        <input type="text" class="form-control cont" name="bairro" placeholder="Bairro" required>
+                        <input type="text" class="form-control <?php echo (isset($_POST['bairro']) && !validaCampo($_POST['bairro']) ? 'is-invalid' : '')?>" name="bairro" placeholder="Bairro" value="<?php echo (isset($bairro) ? $bairro : '') ?>">
+                        <div class="invalid-feedback">
+                            Digite seu bairro
+                        </div>
                     </div>
                     <div class="col-6">
-                        <input type="text" class="form-control" name="complemento" placeholder="Complemento">
+                        <input type="text" class="form-control" name="complemento" placeholder="Complemento" value="<?php echo (isset($complemento) ? $complemento : '') ?>">
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-6">
-                        <select class="form-select" id="estado" name="estado" required>
+                        <select class="form-select <?php echo (isset($_POST['estado']) && !validaCampo($_POST['estado']) ? 'is-invalid' : '')?>" id="estado" name="estado">
                             <option value="">Selecione o estado</option>
                         </select>
+                        <div class="invalid-feedback">
+                            Selecione um estado
+                        </div>
                     </div>
                     <div class="col-6">
-                        <select class="form-select" id="cidade" name="cidade" required>
+                        <select class="form-select <?php echo (isset($_POST['cidade']) && !validaCampo($_POST['cidade']) ? 'is-invalid' : '')?>" id="cidade" name="cidade">
                             <option value="">Selecione a cidade</option>
                         </select>
+                        <div class="invalid-feedback">
+                            Selecione uma cidade
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
-                        <input type="submit" name="submit" class="btn btn-primary form-control" value="Enviar">
+                        <input type="submit" class="btn btn-primary form-control" name="submit" value="Enviar">
                     </div>
                 </div>
             </form>
-        </div>
     </div>
-    <?php endif; ?>
+            
+        
+</div>
+
 </body>
+
 </html>
